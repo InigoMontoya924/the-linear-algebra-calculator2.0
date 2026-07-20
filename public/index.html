@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#002147" />
+    <meta name="description" content="An interactive linear algebra calculator for exact matrix operations and visual explorations of transformations, vectors, projections, and SVD." />
+    <meta name="application-name" content="The Linear Algebra Calculator 2.0" />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:site_name" content="The Linear Algebra Calculator 2.0" />
+    <meta property="og:title" content="The Linear Algebra Calculator 2.0" />
+    <meta property="og:description" content="Calculate matrices exactly and explore linear algebra through interactive visual tools." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="The Linear Algebra Calculator 2.0" />
+    <meta name="twitter:description" content="Calculate matrices exactly and explore linear algebra through interactive visual tools." />
+    <title>The Linear Algebra Calculator 2.0</title>
+    <link rel="icon" href="./favicon.svg" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script>
+      window.MathJax = {
+        startup: {
+          typeset: false,
+          ready() {
+            window.MathJax.startup.defaultReady();
+            window.dispatchEvent(new Event("mathjax-ready"));
+          },
+        },
+        svg: { fontCache: "global" },
+        options: { enableMenu: false },
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-svg.js" referrerpolicy="no-referrer"></script>
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to workspace</a>
+    <div class="page-shell">
+      <header class="topbar">
+        <a class="brand" href="#main-content" aria-label="The Linear Algebra Calculator 2.0 home">
+          <span class="brand-mark" aria-hidden="true">
+            <span class="basis-axis basis-reference-x"></span>
+            <span class="basis-axis basis-reference-y"></span>
+            <span class="basis-axis basis-transformed-x"></span>
+            <span class="basis-axis basis-transformed-y"></span>
+          </span>
+          <span class="brand-copy"><strong>The Linear Algebra Calculator</strong><small>Version 2.0</small></span>
+        </a>
+        <nav class="workspace-nav" aria-label="Learning workspaces" role="tablist">
+          <button class="nav-tab is-active" id="calculator-tab" type="button" role="tab" aria-selected="true" aria-controls="calculator-panel" data-view="calculator" tabindex="0">
+            <span class="tab-icon" aria-hidden="true">⌗</span><span>Calculate</span>
+          </button>
+          <button class="nav-tab" id="transform-tab" type="button" role="tab" aria-selected="false" aria-controls="transform-panel" data-view="transform" tabindex="-1">
+            <span class="tab-icon" aria-hidden="true">↗</span><span>Transform</span>
+          </button>
+          <button class="nav-tab" id="vectors-tab" type="button" role="tab" aria-selected="false" aria-controls="vectors-panel" data-view="vectors" tabindex="-1">
+            <span class="tab-icon" aria-hidden="true">→</span><span>Vectors</span>
+          </button>
+          <button class="nav-tab" id="projection-tab" type="button" role="tab" aria-selected="false" aria-controls="projection-panel" data-view="projection" tabindex="-1">
+            <span class="tab-icon" aria-hidden="true">⊥</span><span>Projection</span>
+          </button>
+          <button class="nav-tab" id="svd-tab" type="button" role="tab" aria-selected="false" aria-controls="svd-panel" data-view="svd" tabindex="-1">
+            <span class="tab-icon" aria-hidden="true">σ</span><span>SVD</span>
+          </button>
+        </nav>
+        <div class="save-status" id="save-status" aria-live="polite"><span aria-hidden="true">●</span> Your work is saved</div>
+      </header>
+
+      <main id="main-content">
+        <section class="workspace-panel is-active" id="calculator-panel" role="tabpanel" aria-labelledby="calculator-tab" data-panel="calculator">
+          <div class="workspace-heading calculator-heading">
+            <div>
+              <p class="eyebrow"><span aria-hidden="true">01</span> Matrix workspace</p>
+              <h1>Matrix <em>calculator.</em></h1>
+            </div>
+          </div>
+
+          <div class="calculator-layout">
+            <aside class="library-panel surface" aria-labelledby="library-title">
+              <div class="panel-heading">
+                <div><p class="kicker">Step 1 · Choose</p><h2 id="library-title">Your matrices</h2></div>
+                <button class="icon-button" id="new-matrix-button" type="button" aria-label="Create a new matrix">+</button>
+              </div>
+              <div class="matrix-library" id="matrix-library"></div>
+              <div class="history-block">
+                <div class="subheading-row"><h3>Recent work</h3><button class="text-button" id="clear-history" type="button">Clear</button></div>
+                <ol class="history-list" id="history-list"></ol>
+              </div>
+            </aside>
+
+            <section class="editor-panel surface" aria-labelledby="editor-title">
+              <div class="panel-heading editor-heading">
+                <div><p class="kicker">Step 2 · Shape</p><h2 id="editor-title">Matrix A</h2></div>
+                <div class="dimension-controls" aria-label="Matrix dimensions">
+                  <label>Rows <select id="row-count" aria-label="Number of rows"></select></label>
+                  <span aria-hidden="true">×</span>
+                  <label>Columns <select id="column-count" aria-label="Number of columns"></select></label>
+                </div>
+              </div>
+              <div class="matrix-editor-wrap">
+                <span class="matrix-bracket left" aria-hidden="true"></span>
+                <div class="matrix-editor" id="matrix-editor" aria-label="Matrix cell editor"></div>
+                <span class="matrix-bracket right" aria-hidden="true"></span>
+              </div>
+              <div class="editor-actions">
+                <p id="input-hint">Try integers, decimals, or fractions such as <code>-3/4</code>.</p>
+                <div>
+                  <button class="text-button" id="paste-matrix-button" type="button">Paste rows</button>
+                  <button class="text-button" id="rename-matrix-button" type="button">Rename</button>
+                  <button class="text-button" id="duplicate-matrix-button" type="button">Duplicate</button>
+                  <button class="text-button destructive" id="delete-matrix-button" type="button">Delete</button>
+                </div>
+              </div>
+              <p class="form-error editor-error" id="editor-error" role="alert"></p>
+              <div class="inline-paste" id="paste-panel" hidden>
+                <label for="paste-input">Paste rows separated by new lines or semicolons</label>
+                <textarea id="paste-input" rows="3" placeholder="1, 2; 3, 4"></textarea>
+                <div><button class="button secondary" id="cancel-paste" type="button">Cancel</button><button class="button primary" id="apply-paste" type="button">Use matrix</button></div>
+              </div>
+            </section>
+
+            <section class="operation-panel surface" aria-labelledby="operation-title" aria-describedby="operation-summary">
+              <div class="panel-heading">
+                <div><p class="kicker">Step 3 · Solve</p><h2 id="operation-title">Choose an operation</h2></div>
+              </div>
+              <div class="operation-picker" id="operation-picker" role="radiogroup" aria-label="Matrix operation">
+                <button class="operation-chip is-active" type="button" role="radio" aria-checked="true" data-operation="rref" tabindex="0">RREF</button>
+                <button class="operation-chip" type="button" role="radio" aria-checked="false" data-operation="add" tabindex="-1">Add</button>
+                <button class="operation-chip" type="button" role="radio" aria-checked="false" data-operation="multiply" tabindex="-1">Multiply</button>
+                <button class="operation-chip" type="button" role="radio" aria-checked="false" data-operation="inverse" tabindex="-1">Inverse</button>
+                <button class="operation-chip" type="button" role="radio" aria-checked="false" data-operation="diagonalize" tabindex="-1">Diagonalize</button>
+              </div>
+              <div class="operand-row" id="operand-row">
+                <div class="selected-operand" aria-live="polite">
+                  <span>Selected from your matrices</span>
+                  <strong id="operand-a-name">Matrix A</strong>
+                  <small id="operand-a-size">2 × 2</small>
+                </div>
+                <label id="operand-b-label" hidden><span id="operand-b-copy">Second matrix</span><select id="operand-b"></select></label>
+              </div>
+              <div class="operation-summary" id="operation-summary">Reduce a matrix to its simplest row-equivalent form.</div>
+              <button class="button primary calculate-button" id="calculate-button" type="button">Calculate RREF <span aria-hidden="true">→</span></button>
+              <p class="form-error" id="calculation-error" role="alert"></p>
+            </section>
+          </div>
+
+          <section class="result-section surface" id="result-section" aria-labelledby="result-title">
+            <div class="result-heading">
+              <div><p class="kicker">Step 4 · Understand</p><h2 id="result-title">Ready when you are</h2></div>
+              <div class="result-format-controls">
+                <div class="segmented" role="group" aria-label="Result number format">
+                  <button class="is-active" type="button" aria-pressed="true" data-format="exact">Exact</button>
+                  <button type="button" aria-pressed="false" data-format="decimal">Decimal</button>
+                </div>
+                <label class="precision-control">Places<select id="decimal-precision" aria-label="Decimal places"><option>2</option><option selected>4</option><option>6</option><option>8</option></select></label>
+              </div>
+            </div>
+            <div class="result-empty" id="result-empty">
+              <span class="empty-orbit" aria-hidden="true">[&nbsp;?&nbsp;]</span>
+              <p>Pick an operation and your result will land here.</p>
+            </div>
+            <div class="result-content" id="result-content" hidden>
+              <div class="result-equation" id="result-equation"></div>
+              <div class="result-matrices" id="result-matrices"></div>
+              <div class="learning-details">
+                <details id="concept-details"><summary><span><strong>How it works</strong><small id="concept-summary">The idea behind this operation</small></span><span aria-hidden="true">+</span></summary><div class="details-body" id="concept-body"></div></details>
+                <details id="steps-details"><summary><span><strong>Show the steps</strong><small id="steps-summary">Follow the calculation</small></span><span aria-hidden="true">+</span></summary><ol class="step-list" id="step-list"></ol></details>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section class="workspace-panel" id="transform-panel" role="tabpanel" aria-labelledby="transform-tab" data-panel="transform" hidden>
+          <div class="workspace-heading compact visual-heading">
+            <div><p class="eyebrow"><span aria-hidden="true">02</span> Transformation playground</p><h1>Matrix <em>transformations.</em></h1></div>
+          </div>
+          <div class="visual-layout">
+            <section class="canvas-panel surface">
+              <div class="visual-toolbar">
+                <div class="toolbar-select"><span class="toolbar-label">Matrix</span><label>Transform with<select id="transform-matrix"></select></label></div>
+                <div class="toolbar-actions">
+                  <div class="preset-row" aria-label="Transformation presets">
+                    <button class="preset-button" type="button" data-preset="rotation" aria-label="Apply a 90 degree counterclockwise rotation">Rotation</button>
+                    <button class="preset-button" type="button" data-preset="reflection">Reflect</button>
+                    <button class="preset-button" type="button" data-preset="projection">Flatten</button>
+                  </div>
+                  <fieldset class="transform-feature-controls">
+                    <legend class="sr-only">Transformation learning tools</legend>
+                    <label class="feature-toggle" for="basis-edit-toggle">
+                      <input id="basis-edit-toggle" type="checkbox" aria-controls="basis-drag-guide basis-coordinate-editor" aria-describedby="basis-drag-status" />
+                      <span>Edit basis</span>
+                    </label>
+                    <label class="feature-toggle" for="eigen-directions-toggle">
+                      <input id="eigen-directions-toggle" type="checkbox" aria-controls="eigen-direction-readout" />
+                      <span>Eigenvectors</span>
+                    </label>
+                  </fieldset>
+                  <div class="zoom-controls" aria-label="Graph zoom">
+                    <button type="button" id="zoom-out" aria-label="Zoom out">−</button><span id="zoom-label">±4</span><button type="button" id="zoom-in" aria-label="Zoom in">+</button>
+                  </div>
+                </div>
+              </div>
+              <div class="basis-drag-guide" id="basis-drag-guide">
+                <div class="basis-drag-copy">
+                  <span class="basis-drag-icon" aria-hidden="true">↗</span>
+                  <div>
+                    <strong>Drag î or ĵ to reshape the matrix.</strong>
+                    <span id="basis-drag-status" role="status" aria-live="polite">Turn on Edit basis to begin.</span>
+                  </div>
+                </div>
+                <div class="basis-selector-group" role="group" aria-label="Choose a basis vector for keyboard editing">
+                  <span>Keyboard</span>
+                  <button id="basis-i-select" type="button" aria-pressed="true" aria-describedby="basis-keyboard-help">î</button>
+                  <button id="basis-j-select" type="button" aria-pressed="false" aria-describedby="basis-keyboard-help">ĵ</button>
+                </div>
+                <small id="basis-keyboard-help">Focus î or ĵ, then use arrow keys to nudge its endpoint.</small>
+              </div>
+              <div class="canvas-wrap">
+                <canvas id="transform-canvas" width="960" height="620" role="img" aria-label="Interactive coordinate grid showing a matrix transformation" aria-describedby="basis-drag-status basis-keyboard-help"></canvas>
+              </div>
+              <div class="animation-controls">
+                <div class="playback-controls">
+                  <button class="button secondary" id="play-transform" type="button"><span aria-hidden="true">▶</span> Play</button>
+                  <fieldset class="playback-speed-control" aria-describedby="transform-speed-help"><legend>Speed</legend><label><input type="radio" name="transform-playback-speed" value="slow" data-playback-speed checked /><span>Slow</span></label><label><input type="radio" name="transform-playback-speed" value="fast" data-playback-speed /><span>Fast</span></label></fieldset>
+                  <span class="sr-only" id="transform-speed-help">This setting also controls SVD playback.</span>
+                </div>
+                <label for="transform-progress"><span>Identity</span><input id="transform-progress" type="range" min="0" max="100" value="100" /><span>Transformed</span></label>
+              </div>
+            </section>
+            <aside class="insight-panel surface" aria-labelledby="transformation-story-title">
+              <p class="kicker">What to notice</p>
+              <h2 id="transformation-story-title">The plane keeps its area</h2>
+              <p id="transformation-story">Both basis arrows move, carrying every grid point with them.</p>
+              <dl class="insight-stats">
+                <div><dt>Area scale</dt><dd id="determinant-value">1</dd></div>
+                <div><dt>Orientation</dt><dd id="orientation-value">kept</dd></div>
+              </dl>
+              <div class="basis-readout">
+                <div><span class="basis-dot x"></span><span><small>where î lands</small><strong id="basis-i">(1, 0)</strong></span></div>
+                <div><span class="basis-dot y"></span><span><small>where ĵ lands</small><strong id="basis-j">(0, 1)</strong></span></div>
+              </div>
+              <section class="basis-coordinate-editor" id="basis-coordinate-editor" aria-labelledby="basis-coordinate-title">
+                <div class="basis-coordinate-heading">
+                  <h3 id="basis-coordinate-title">Basis endpoints</h3>
+                  <span>Keyboard alternative</span>
+                </div>
+                <p id="basis-coordinate-help">Type exact coordinates when dragging is not convenient.</p>
+                <div class="basis-coordinate-groups">
+                  <div class="basis-coordinate-group" role="group" aria-labelledby="basis-i-coordinate-label">
+                    <span id="basis-i-coordinate-label"><span class="basis-dot x" aria-hidden="true"></span> î</span>
+                    <label for="basis-i-x">x<input id="basis-i-x" type="text" inputmode="decimal" value="1" autocomplete="off" spellcheck="false" aria-describedby="basis-coordinate-help" /></label>
+                    <label for="basis-i-y">y<input id="basis-i-y" type="text" inputmode="decimal" value="0" autocomplete="off" spellcheck="false" aria-describedby="basis-coordinate-help" /></label>
+                  </div>
+                  <div class="basis-coordinate-group" role="group" aria-labelledby="basis-j-coordinate-label">
+                    <span id="basis-j-coordinate-label"><span class="basis-dot y" aria-hidden="true"></span> ĵ</span>
+                    <label for="basis-j-x">x<input id="basis-j-x" type="text" inputmode="decimal" value="0" autocomplete="off" spellcheck="false" aria-describedby="basis-coordinate-help" /></label>
+                    <label for="basis-j-y">y<input id="basis-j-y" type="text" inputmode="decimal" value="1" autocomplete="off" spellcheck="false" aria-describedby="basis-coordinate-help" /></label>
+                  </div>
+                </div>
+              </section>
+              <section class="eigen-direction-readout" id="eigen-direction-readout" aria-labelledby="eigen-direction-title" hidden>
+                <div class="eigen-direction-heading">
+                  <span aria-hidden="true">λ</span>
+                  <div><small>Unit vectors</small><h3 id="eigen-direction-title">Eigenvector stretching</h3></div>
+                </div>
+                <div class="eigen-direction-list" id="eigen-direction-list">
+                  <p>Unit eigenvectors and their transformed images will appear here.</p>
+                </div>
+              </section>
+              <details><summary>Why do columns matter?</summary><p>The first column tells you where the horizontal basis vector lands; the second column does the same for the vertical basis vector.</p></details>
+            </aside>
+          </div>
+        </section>
+
+        <section class="workspace-panel" id="vectors-panel" role="tabpanel" aria-labelledby="vectors-tab" data-panel="vectors" hidden>
+          <div class="workspace-heading compact visual-heading">
+            <div><p class="eyebrow"><span aria-hidden="true">03</span> Vector sketchbook</p><h1>Vector <em>sketchbook.</em></h1></div>
+          </div>
+          <div class="visual-layout vectors-layout">
+            <section class="canvas-panel surface">
+              <div class="visual-toolbar vector-toolbar">
+                <div><p class="kicker">Live plane</p><h2>Your vectors</h2></div>
+                <label class="switch-label"><input type="checkbox" id="show-resultant" /> Show resultant</label>
+              </div>
+              <div class="canvas-wrap"><canvas id="vector-canvas" width="960" height="620" role="img" aria-label="Coordinate plane showing the stored vectors"></canvas></div>
+            </section>
+            <aside class="vector-panel surface" aria-labelledby="vector-form-title">
+              <div class="panel-heading"><div><p class="kicker">Add an arrow</p><h2 id="vector-form-title">New vector</h2></div></div>
+              <form id="vector-form">
+                <label class="wide-label">Label<input id="vector-label" maxlength="8" value="u" /></label>
+                <fieldset><legend>Starting point</legend><label>x<input id="vector-start-x" inputmode="decimal" value="0" /></label><label>y<input id="vector-start-y" inputmode="decimal" value="0" /></label></fieldset>
+                <fieldset><legend>Movement</legend><label>Δx<input id="vector-dx" inputmode="decimal" value="3" /></label><label>Δy<input id="vector-dy" inputmode="decimal" value="2" /></label></fieldset>
+                <div class="vector-form-actions"><button class="button secondary" id="cancel-vector-edit" type="button" hidden>Cancel</button><button class="button primary" id="vector-submit" type="submit">Add vector <span aria-hidden="true">→</span></button></div>
+                <p class="form-error" id="vector-error" role="alert"></p>
+              </form>
+              <div class="vector-list-wrap"><div class="subheading-row"><h3>On the plane</h3><span id="vector-count">0 vectors</span></div><ul class="vector-list" id="vector-list"></ul></div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="workspace-panel" id="projection-panel" role="tabpanel" aria-labelledby="projection-tab" data-panel="projection" hidden>
+          <div class="workspace-heading compact visual-heading">
+            <div><p class="eyebrow"><span aria-hidden="true">04</span> Norm comparison</p><h1>Projection <em>lab.</em></h1></div>
+          </div>
+          <div class="visual-layout learning-lab-layout">
+            <section class="canvas-panel surface" aria-labelledby="projection-plane-title">
+              <div class="visual-toolbar lab-toolbar">
+                <div><p class="kicker">Nearest point</p><h2 id="projection-plane-title">Project b onto span(a)</h2></div>
+                <div class="lab-legend" aria-label="Projection methods">
+                  <span><i class="legend-line l2" aria-hidden="true"></i>L₂ least squares</span>
+                  <span><i class="legend-line l1" aria-hidden="true"></i>L₁ absolute error</span>
+                </div>
+              </div>
+              <div class="interaction-guide">
+                <span class="interaction-icon" aria-hidden="true">↔</span>
+                <div><strong>Drag a to rotate the line; drag b to move the target.</strong><span id="projection-drag-status" role="status" aria-live="polite">Focus either handle and use the arrow keys for precise changes.</span></div>
+              </div>
+              <div class="canvas-wrap projection-canvas-wrap">
+                <canvas id="projection-canvas" width="960" height="620" role="img" aria-label="Plane comparing L two and L one projection onto a line" aria-describedby="projection-drag-status projection-input-help"></canvas>
+                <button class="projection-drag-handle projection-direction-handle" id="projection-direction-handle" type="button" data-projection-vector="direction" aria-label="Move spanning direction a" aria-describedby="projection-drag-status"><span class="sr-only">Drag or use the arrow keys to move spanning direction a.</span></button>
+                <button class="projection-drag-handle projection-target-handle" id="projection-drag-handle" type="button" data-projection-vector="target" aria-label="Move target b" aria-describedby="projection-drag-status"><span class="sr-only">Drag or use the arrow keys to move target b.</span></button>
+              </div>
+              <div class="lab-input-bar" id="projection-input-help">
+                <fieldset class="coordinate-pair">
+                  <legend>Spanning direction a</legend>
+                  <label>x<input id="projection-a-x" type="number" inputmode="decimal" step="any" value="2" /></label>
+                  <label>y<input id="projection-a-y" type="number" inputmode="decimal" step="any" value="1" /></label>
+                </fieldset>
+                <fieldset class="coordinate-pair">
+                  <legend>Target b</legend>
+                  <label>x<input id="projection-b-x" type="number" inputmode="decimal" step="any" value="2" /></label>
+                  <label>y<input id="projection-b-y" type="number" inputmode="decimal" step="any" value="3" /></label>
+                </fieldset>
+                <p class="form-error lab-error" id="projection-error" role="alert"></p>
+              </div>
+            </section>
+            <aside class="insight-panel projection-insight" aria-labelledby="projection-story-title">
+              <p class="kicker">What changes with the norm</p>
+              <h2 id="projection-story-title">Two ideas of “nearest”</h2>
+              <p id="projection-story">L₂ meets the line at a right angle. L₁ minimises horizontal plus vertical movement, so it may choose a different point.</p>
+              <dl class="insight-stats lab-stats">
+                <div><dt>L₂ squared error</dt><dd id="projection-l2-distance">—</dd></div>
+                <div><dt>L₁ absolute error</dt><dd id="projection-l1-distance">—</dd></div>
+              </dl>
+              <div class="norm-readouts">
+                <section aria-labelledby="projection-l2-title">
+                  <div><span class="norm-badge l2" aria-hidden="true">2</span><h3 id="projection-l2-title">Least squares</h3></div>
+                  <p><span>Projection</span><strong id="projection-l2-point">—</strong></p>
+                  <p><span>Residual</span><strong id="projection-l2-residual">—</strong></p>
+                </section>
+                <section aria-labelledby="projection-l1-title">
+                  <div><span class="norm-badge l1" aria-hidden="true">1</span><h3 id="projection-l1-title">Least absolute error</h3></div>
+                  <p><span>Nearest point</span><strong id="projection-l1-point">—</strong></p>
+                  <p><span>Residual</span><strong id="projection-l1-residual">—</strong></p>
+                </section>
+              </div>
+              <p class="lab-note" id="projection-uniqueness">The L₁ answer is unique for this example.</p>
+              <details><summary>Why can L₁ have several answers?</summary><p>The L₁ distance has diamond-shaped level sets. A whole edge can touch the line at once, making every point along a segment equally close.</p></details>
+            </aside>
+          </div>
+        </section>
+
+        <section class="workspace-panel" id="svd-panel" role="tabpanel" aria-labelledby="svd-tab" data-panel="svd" hidden>
+          <div class="workspace-heading compact visual-heading">
+            <div><p class="eyebrow"><span aria-hidden="true">05</span> Factorisation explorer</p><h1>SVD <em>explorer.</em></h1></div>
+          </div>
+          <section class="svd-overview" aria-labelledby="svd-intro-title">
+            <div><p class="kicker" aria-label="A equals U times Sigma times V transpose">A = UΣVᵀ</p><h2 id="svd-intro-title">SVD in three moves</h2></div>
+            <p>SVD decomposes any real rectangular matrix A as A = UΣVᵀ. The orthogonal matrices Vᵀ and U act like rotations or reflections, while Σ stretches, shrinks, or collapses along perpendicular axes. So any linear transformation can be understood as a rotation or reflection, followed by a stretch or collapse, then another rotation or reflection.</p>
+            <p><strong>Try it:</strong> this explorer visualises the 2×2 case. Choose a matrix, then press Play factors or select a stage. Use Factor progress to explore between stages, watching the solid grid and canonical basis move toward the faint final A-grid.</p>
+          </section>
+          <div class="visual-layout learning-lab-layout">
+            <section class="canvas-panel surface" aria-labelledby="svd-plane-title">
+              <div class="visual-toolbar">
+                <div class="toolbar-select"><span class="toolbar-label">Matrix</span><label>Decompose<select id="svd-matrix"></select></label></div>
+                <div class="svd-stage-buttons" role="group" aria-label="SVD factor stages">
+                  <button type="button" data-svd-stage="0" aria-pressed="false">Input</button>
+                  <button type="button" data-svd-stage="1" aria-pressed="false">Align Vᵀ</button>
+                  <button type="button" data-svd-stage="2" aria-pressed="false">Scale Σ</button>
+                  <button type="button" data-svd-stage="3" aria-pressed="true">Orient U</button>
+                </div>
+              </div>
+              <div class="interaction-guide svd-guide">
+                <span class="interaction-icon" aria-hidden="true">σ</span>
+                <div><strong id="svd-plane-title">Move the canonical grid through Vᵀ, Σ, and U.</strong><span id="svd-stage-copy">The solid grid shows the current stage; the faint grid shows final A.</span><span class="sr-only" id="svd-play-status" role="status" aria-live="polite"></span></div>
+              </div>
+              <div class="canvas-wrap">
+                <canvas id="svd-canvas" width="960" height="620" role="img" aria-label="Cartesian grid and canonical basis vectors transformed through the stages of a singular value decomposition" aria-describedby="svd-stage-copy svd-error"></canvas>
+              </div>
+              <div class="svd-controls">
+                <div class="playback-controls">
+                  <button class="button secondary" id="play-svd" type="button"><span aria-hidden="true">▶</span> Play factors</button>
+                  <fieldset class="playback-speed-control" aria-describedby="svd-speed-help"><legend>Speed</legend><label><input type="radio" name="svd-playback-speed" value="slow" data-playback-speed checked /><span>Slow</span></label><label><input type="radio" name="svd-playback-speed" value="fast" data-playback-speed /><span>Fast</span></label></fieldset>
+                  <span class="sr-only" id="svd-speed-help">This setting also controls transformation playback.</span>
+                </div>
+                <label for="svd-progress"><span>Factor progress</span><input id="svd-progress" type="range" min="0" max="300" step="1" value="300" aria-valuetext="U stage, 100 percent complete" /><output id="svd-progress-label" for="svd-progress">U</output></label>
+              </div>
+              <p class="form-error lab-error svd-error" id="svd-error" role="alert"></p>
+            </section>
+            <aside class="insight-panel svd-insight" aria-labelledby="svd-story-title">
+              <p class="kicker">Current stage</p>
+              <h2 id="svd-story-title">Align, scale, orient</h2>
+              <p id="svd-story">Vᵀ rotates or reflects the grid, Σ stretches or collapses it, and U sets its final orientation.</p>
+              <dl class="insight-stats lab-stats">
+                <div><dt>Rank</dt><dd id="svd-rank">—</dd></div>
+                <div><dt>Condition</dt><dd id="svd-condition">—</dd></div>
+              </dl>
+              <div class="singular-values" aria-label="Singular values">
+                <div><span>σ₁</span><strong id="svd-sigma-one">—</strong><i id="svd-sigma-one-bar"></i></div>
+                <div><span>σ₂</span><strong id="svd-sigma-two">—</strong><i id="svd-sigma-two-bar"></i></div>
+              </div>
+              <dl class="svd-factors">
+                <div><dt>U</dt><dd id="svd-u">—</dd></div>
+                <div><dt>Σ</dt><dd id="svd-sigma">—</dd></div>
+                <div><dt>Vᵀ</dt><dd id="svd-vt">—</dd></div>
+              </dl>
+              <p class="lab-note" id="svd-note">The faint dashed grid is the final A-transformed destination; the solid grid shows the current stage.</p>
+              <details><summary>Why are the basis vectors enough?</summary><p>A linear transformation is completely determined by where it sends e₁ and e₂. Those two images are the columns of the current matrix, and every grid line follows them.</p></details>
+            </aside>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <div class="footer-brand"><strong>The Linear Algebra Calculator 2.0</strong><span>Interactive, exact and local-first.</span></div>
+        <div class="footer-actions"><span>Calculations stay in your browser.</span><button class="text-button" id="reset-workspace" type="button">Reset workspace</button></div>
+      </footer>
+    </div>
+
+    <dialog id="new-matrix-dialog" aria-labelledby="matrix-dialog-title" aria-describedby="matrix-dialog-description">
+      <form method="dialog" id="new-matrix-form">
+        <div class="dialog-heading"><p class="kicker" id="matrix-dialog-kicker">New matrix</p><h2 id="matrix-dialog-title">Give it a name</h2><p id="matrix-dialog-description">You can change its size once it is on your shelf.</p></div>
+        <label>Name<input id="new-matrix-name" maxlength="20" placeholder="Matrix C" autocomplete="off" /></label>
+        <p class="form-error" id="new-matrix-error" role="alert"></p>
+        <div class="dialog-actions"><button class="button secondary" value="cancel" type="button" id="cancel-new-matrix">Cancel</button><button class="button primary" value="default" type="submit" id="matrix-dialog-submit">Create matrix</button></div>
+      </form>
+    </dialog>
+  </body>
+</html>
