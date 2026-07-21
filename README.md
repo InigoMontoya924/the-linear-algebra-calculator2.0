@@ -12,11 +12,11 @@ Version 2.0 completely revamps that prototype into a web app with new calculatio
 
 ## How it's built
 
-I gave Codex the original LAC script and a goal: transform this six-year-old classroom experiment into a polished, modern classroom application.
+This week, I gave Codex the original LAC script and a goal: transform this high school project into a polished, modern classroom application.
 
-Codex inspected the existing program, proposed a modernisation plan, and began implementing it. The first run already produced a (really good!) working product. From there, I directed further iterations: refining UI, adding new maths functionality, etc, most of them minor edits. The most remarkable thing for me was that Codex opened an internal browser, and tested the web app on its own, saving me so much effort. 
+Codex inspected the existing program, proposed a modernisation plan, and began implementing it. The first run already produced a (really good!) working product. From there, I directed further iterations: refining UI, adding new maths functionality, etc, based on my vision for the LAC. Codex was able to open an internal browser, and test the web app on its own, which was remarkable and saved me so much effort.
 
-Apart from the original script [linear_calc.py](linear_calc.py), the new application was built entirely by GPT-5.6 Sol Ultra, through around 10 iterations.
+Apart from the original script [linear_calc.py](linear_calc.py), the new application was built entirely by GPT-5.6 Sol Ultra.
 
 
 ## Highlights
