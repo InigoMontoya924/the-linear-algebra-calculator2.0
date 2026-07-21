@@ -2,11 +2,11 @@
 
 To Mrs. B, who inspired LAC 1.0 and was startled by a sparrow that darted in through the window.
 
-An interactive linear algebra workspace for classrooms. It combines matrix calculation with visual experiments that show how matrices represents linear transformations in the plane. 
+An interactive linear algebra lab for classrooms. It combines matrix calculation with visual experiments that show how matrices represent linear transformations in the plane. Check it out [here](https://inigomontoya924.github.io/the-linear-algebra-calculator2.0/).
 
 ## Some backstory
 
-The project began as a Tkinter calculator (see [README_linear_calc.md](READ_ME_linear_calc.md) and [linear_calc.py](linear_calc.py)) in 2021, made by the author while he was in high school. It was designed as a symbolic calculation tool that can do basic matrix algebra, and can visualize linear transformations. I made it for my maths teacher Mrs. B, who was about to teach linear algebra for a new syllabus. 
+The project began as a Tkinter calculator (see [README_linear_calc.md](README_linear_calc.md) and [linear_calc.py](linear_calc.py)) in 2021, made by the author while he was in high school. It was designed as a symbolic calculation tool that can do basic matrix algebra, and can visualize linear transformations. I made it for my maths teacher Mrs. B, who was about to teach linear algebra for a new syllabus. She used it across lessons 
 
 Version 2.0 completely revamps that prototype into a web app with new calculation engines, interactive teaching labs, and modern UI, built entirely with Codex on GPT-5.6 Sol Ultra.
 
@@ -33,7 +33,7 @@ Apart from the original script [linear_calc.py](linear_calc.py), the new applica
 
 ## A quick tour
 
-1. In **Calculate**, select a matrix from the shelf and try RREF, addition, multiplication, and inverse. Paste `4, 1; 2, 3` into a matrix to see an exact diagonalisation with eigenvalues 5 and 2.
+1. In **Calculate**, select a matrix from the shelf and try RREF, addition, multiplication, and inverse. 
 2. In **Transform**, choose a matrix, press **Play transformation**, and toggle **Eigenvectors** to watch unit vectors become λ₁v₁ and λ₂v₂. Turn on **Edit basis** to move either basis vector directly.
 3. In **Projection**, drag both `a` and `b` to compare the L₂ and L₁ nearest points and residuals.
 4. In **SVD**, press **Play factors** to watch the canonical grid move through Vᵀ, Σ, and U.
