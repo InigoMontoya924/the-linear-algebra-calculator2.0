@@ -6,7 +6,7 @@ An interactive linear algebra workspace for classrooms. It combines matrix calcu
 
 ## Some backstory
 
-The project began as a Tkinter calculator (see 'README_linear_calc.md' and 'linear_calc.py') in 2021, made by the author while he was in high school. It was designed as a symbolic calculation tool that can do basic matrix algebra, and can visualize linear transformations. I made it for my maths teacher Mrs. B, who was about to teach linear algebra for a new syllabus. 
+The project began as a Tkinter calculator (see [README_linear_calc.md](READ_ME_linear_calc.md) and [linear_calc.py](linear_calc.py)) in 2021, made by the author while he was in high school. It was designed as a symbolic calculation tool that can do basic matrix algebra, and can visualize linear transformations. I made it for my maths teacher Mrs. B, who was about to teach linear algebra for a new syllabus. 
 
 Version 2.0 completely revamps that prototype into a web app with new calculation engines, interactive teaching labs, and modern UI, built entirely with Codex on GPT-5.6 Sol Ultra.
 
